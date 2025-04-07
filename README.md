@@ -1,29 +1,32 @@
-# confidentialmind-endpoints-quickstart
-Quickstart guides for interacting with different endpoints
+# QuickStart for ConfidentialMind AI Endpoints
 
+This repository contains simple examples to help you get started with our AI services.
 
-## Structure (remove after done)
+## What's Inside
 
-README.md (generic introduction and pointer to model and rag start)
+This repository is organized into two main sections:
 
-- /model-endpoint
-  - README.md (introduction to us having OpenAI api like interface and examples on how to run the test scripts with installing dependencies from requirements)
-  - .env.example (example on how to set envs (URL and API key))
-  - chat.py (example using http requests)
-  - chat-openai-sdk.py (same example but using python SDK)
-  - multimodal.py (send image file with question, have a sample image file in the repo)
-  - /test-data/image.png (picture of table or other interesting multimodal use case)
-  - requirements.txt (deps so that all scripts are runnable)
-- /rag-endpoint
-  - README.md (link to our RAG documentation, basic info of RAG, how to run the files)
-  - .env.example (example on how to set envs (URL and API key))
-  - send-files.py (send files to endpoint, send all files in /test-data folder)
-  - get-files.py (get all files currently in the system)
-  - chat.py (example /chat/completions using http requests)
-  - /test-data/whitepaper.pdf (our whitepaper or other test material)
-  - requirements.txt (deps so that all scripts are runnable)
-- /agent-endpoint
-  - README.md (link to agent repo)
+- **Model Endpoint Examples** (`/model-endpoint`): Simple code snippets to interact with language models via API
+- **RAG Endpoint Examples** (`/rag-endpoint`): Examples for using our Retrieval-Augmented Generation system to chat with your documents
 
-### Some ideas for the future
-- Add complete RAG command line tool. Or make PIP release out of the tool -> make it easily runnable
+## Getting Started
+
+1. Clone this repository
+2. Navigate to either the `model-endpoint` or `rag-endpoint` directory
+3. Follow the instructions in the respective README.md file
+
+Each directory contains standalone examples that demonstrate core functionality with minimal dependencies.
+
+## Model Endpoint vs RAG Endpoint
+
+- **Model Endpoint**: Direct access to our language models (similar to OpenAI's API)
+- **RAG Endpoint**: Enhanced AI that can retrieve and reason over your documents (also compatible with OpenAI's API)
+
+## Prerequisites
+
+- Python environment
+- API access credentials (provided separately)
+
+## Help and Support
+
+For more detailed documentation and guides, visit our [documentation site](https://docs.confidentialmind.com/).
