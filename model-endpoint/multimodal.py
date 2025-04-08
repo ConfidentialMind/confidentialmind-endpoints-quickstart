@@ -90,7 +90,8 @@ def main():
     ]
     
     print(f"Processing image: {args.image}")
-    
+    print("Note: This may take some time depending on the image size and content.")
+
     # Make the API request
     try:
         response = client.chat.completions.create(
