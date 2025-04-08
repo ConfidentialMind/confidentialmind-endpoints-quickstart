@@ -107,7 +107,7 @@ All other OpenAI API endpoints are proxied through a generic handler.
    ```
    docker run -d -p 3000:8080 \
      --add-host=host.docker.internal:host-gateway \
-     -e OPENAI_API_BASE_URL=http://127.0.0.1:3333 \
+     -e OPENAI_API_BASE_URL=http://host.docker.internal:3333 \
      -e OPENAI_API_KEY=asd \
      -v open-webui:/app/backend/data \
      --name open-webui \
