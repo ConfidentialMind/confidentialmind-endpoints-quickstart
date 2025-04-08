@@ -29,4 +29,4 @@ Each directory contains standalone examples that demonstrate core functionality 
 
 ## Help and Support
 
-For more detailed documentation and guides, visit our [documentation site](https://docs.confidentialmind.com/).
+For more detailed documentation and guides, visit our [documentation site](https://docs.confidentialmind.com).
