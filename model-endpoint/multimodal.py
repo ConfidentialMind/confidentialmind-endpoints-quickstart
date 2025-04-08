@@ -40,9 +40,10 @@ def main():
     load_dotenv()
     
     # Get API credentials from environment variables
+    # Note that the model deployed in the API must support multimodal capabilities
     base_url = os.getenv("BASE_URL")
     api_key = os.getenv("API_KEY")
-    model = os.getenv("MODEL_NAME")  # Should be a multimodal-capable model
+    model = os.getenv("MODEL_NAME", "cm-llm")
     
     # Verify credentials are available
     if not base_url or not api_key:
