@@ -88,4 +88,4 @@ python delete-files.py --all --yes
 
 ## More Information
 
-For detailed documentation, visit our [official documentation](https://docs.confidentialmind.com/).
+For detailed documentation, visit our [official documentation](https://docs.confidentialmind.com).

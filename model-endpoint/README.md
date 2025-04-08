@@ -58,4 +58,4 @@ Our API mimics the OpenAI API interface, making integration seamless if you're a
 
 ## Next Steps
 
-For more advanced usage, please refer to our [detailed documentation](https://docs.confidentialmind.com/).
+For more advanced usage, please refer to our [detailed documentation](https://docs.confidentialmind.com).
