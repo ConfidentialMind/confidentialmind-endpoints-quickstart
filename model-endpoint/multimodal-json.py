@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Example of using multimodal capabilities with guided JSON output.
-This demonstrates how to extract structured data from images.
+Example of using multimodal capabilities with guided JSON output and streaming.
+This demonstrates how to extract structured data from images with real-time feedback.
 """
 
 import os
@@ -69,7 +69,7 @@ def get_content_type(file_path):
         return 'image/png'
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract structured data from images using our API')
+    parser = argparse.ArgumentParser(description='Extract structured data from images using our API with streaming')
     parser.add_argument('--image', type=str, default='test-data/image_table.png',
                         help='Path to image file (default: test-data/image_table.png)')
     parser.add_argument('--output', type=str, default='output.json',
@@ -131,33 +131,40 @@ def main():
     ]
     
     print(f"Processing image: {args.image}")
-    print("Requesting structured JSON extraction...")
+    print("Note: This may take some time depending on the image size and content.")
+    print("Requesting structured JSON extraction with streaming...")
     
-    # Make the API request with guided JSON output
+    # Make the API request with guided JSON output and streaming
     try:
-        response = client.chat.completions.create(
+        stream = client.chat.completions.create(
             model=model,
             messages=messages,
             temperature=0.3,
             max_tokens=3000,
+            stream=True,  # Enable streaming
             extra_body={
                 "guided_json": DOCUMENT_SCHEMA,
                 "guided_decoding_backend": "xgrammar"  # This backend is used for decoding
             }
         )
         
-        # Extract and parse the response
-        json_response = response.choices[0].message.content
+        print("\nStreaming response:")
+        print("-" * 60)
         
-        # Display the raw JSON response
-        print("\nRaw JSON Response:")
-        print("-" * 60)
-        print(json_response)
-        print("-" * 60)
+        # Process the streaming response
+        full_response = ""
+        for chunk in stream:
+            if chunk.choices:
+                content = chunk.choices[0].delta.content
+                if content:
+                    print(content, end='', flush=True)
+                    full_response += content
+        
+        print("\n" + "-" * 60)
         
         # Parse and save the JSON
         try:
-            parsed_json = json.loads(json_response)
+            parsed_json = json.loads(full_response)
             
             # Save to file
             with open(args.output, 'w', encoding='utf-8') as f:
