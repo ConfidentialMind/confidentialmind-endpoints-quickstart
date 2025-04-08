@@ -64,7 +64,8 @@ def main():
         print("-" * 40)
         
         # Print some additional information about the response
-        print(f"\nCompletion tokens: {result.get('usage', {}).get('completion_tokens', 'N/A')}")
+        print(f"\nInput tokens: {result.get('usage', {}).get('prompt_tokens', 'N/A')}")
+        print(f"Completion tokens: {result.get('usage', {}).get('completion_tokens', 'N/A')}")
         print(f"Total tokens: {result.get('usage', {}).get('total_tokens', 'N/A')}")
         
     except requests.exceptions.RequestException as e:
