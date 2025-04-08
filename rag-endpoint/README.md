@@ -41,7 +41,7 @@ python send-files.py --dir ./my-documents
 Upload a single file:
 
 ```bash
-python send-files.py --file ./test-data/whitepaper.pdf
+python send-files.py --file ./test-data/ConfidentialMind-Whitepaper.pdf
 ```
 
 ### Viewing Documents
