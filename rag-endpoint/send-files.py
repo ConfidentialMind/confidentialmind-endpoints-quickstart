@@ -16,23 +16,6 @@ from rich.console import Console
 from rich.table import Table
 
 
-def find_documents(directory_path: str):
-    """Find all supported document files in a directory."""
-    document_paths = []
-    allowed_extensions = {'.pdf', '.docx', '.md', '.txt'}
-    
-    directory = Path(directory_path)
-    if not directory.exists():
-        raise FileNotFoundError(f"Directory not found: {directory_path}")
-    
-    # Walk through files in directory (non-recursive)
-    for file_path in directory.iterdir():
-        if file_path.is_file() and file_path.suffix.lower() in allowed_extensions:
-            document_paths.append(str(file_path.absolute()))
-    
-    return document_paths
-
-
 def upload_file(base_url: str, file_path: str, api_key=None):
     """Upload a single file to the RAG system."""
     url = f"{base_url}/files"
@@ -63,6 +46,23 @@ def upload_file(base_url: str, file_path: str, api_key=None):
         response.raise_for_status()
         
         return response.json()
+
+
+def find_documents(directory_path: str):
+    """Find all supported document files in a directory."""
+    document_paths = []
+    allowed_extensions = {'.pdf', '.docx', '.md', '.txt'}
+    
+    directory = Path(directory_path)
+    if not directory.exists():
+        raise FileNotFoundError(f"Directory not found: {directory_path}")
+    
+    # Walk through files in directory (non-recursive)
+    for file_path in directory.iterdir():
+        if file_path.is_file() and file_path.suffix.lower() in allowed_extensions:
+            document_paths.append(str(file_path.absolute()))
+    
+    return document_paths
 
 
 def upload_directory(base_url: str, directory_path: str, api_key=None):
