@@ -74,16 +74,16 @@ Start the proxy server:
 python app.py
 ```
 
-By default, the server runs on port 3333. You can change this by setting the `PORT` environment variable:
+By default, the server runs on port 3333. You can change this by setting the `CM_OPEN_WEBUI_PROXY_PORT` environment variable:
 
 ```
-PORT=5000 python app.py
+CM_OPEN_WEBUI_PROXY_PORT=5000 python app.py
 ```
 
 To specify a different configuration file:
 
 ```
-CONFIG_FILE=my-config.json python app.py
+CM_OPEN_WEBUI_PROXY_CONFIG_FILE=my-config.json python app.py
 ```
 
 ### Endpoints
