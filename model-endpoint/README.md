@@ -1,6 +1,6 @@
 # Model Endpoint Examples
 
-These examples demonstrate how to interact with our AI model endpoints, which use an OpenAI-compatible API interface.
+These examples demonstrate how to interact with our AI model endpoints, which use an OpenAI-compatible API interface. They cover various functionalities, including chat completions, streaming responses, and multimodal capabilities. The examples show integration with both HTTP requests and the OpenAI SDK.
 
 ## Setup
 
