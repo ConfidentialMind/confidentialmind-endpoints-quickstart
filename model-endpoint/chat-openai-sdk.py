@@ -58,7 +58,8 @@ def main():
         print("-" * 40)
         
         # Print some additional information about the response
-        print(f"\nCompletion tokens: {response.usage.completion_tokens}")
+        print(f"\nInput tokens: {response.usage.prompt_tokens}")
+        print(f"Completion tokens: {response.usage.completion_tokens}")
         print(f"Total tokens: {response.usage.total_tokens}")
         
     except Exception as e:
