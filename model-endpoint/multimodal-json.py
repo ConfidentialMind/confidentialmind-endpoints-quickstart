@@ -53,10 +53,25 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
+def get_content_type(file_path):
+    """Determine content type based on file extension."""
+    extension = os.path.splitext(file_path)[1].lower()
+    if extension == '.png':
+        return 'image/png'
+    elif extension in ['.jpg', '.jpeg']:
+        return 'image/jpeg'
+    elif extension == '.gif':
+        return 'image/gif'
+    elif extension == '.webp':
+        return 'image/webp'
+    else:
+        # Default to png if unknown
+        return 'image/png'
+
 def main():
     parser = argparse.ArgumentParser(description='Extract structured data from images using our API')
     parser.add_argument('--image', type=str, default='test-data/image_table.png',
-                        help='Path to image file (default: test-data/image.png)')
+                        help='Path to image file (default: test-data/image_table.png)')
     parser.add_argument('--output', type=str, default='output.json',
                         help='Path to save the output JSON (default: output.json)')
     args = parser.parse_args()
@@ -92,6 +107,7 @@ def main():
     # Encode the image to base64
     try:
         base64_image = encode_image(args.image)
+        content_type = get_content_type(args.image)
     except Exception as e:
         print(f"Error encoding image: {e}")
         return
@@ -106,7 +122,7 @@ def main():
                 {
                     "type": "image_url",
                     "image_url": {
-                        "url": f"data:image/jpeg;base64,{base64_image}"
+                        "url": f"data:{content_type};base64,{base64_image}"
                     }
                 }
             ]
