@@ -48,6 +48,20 @@ def upload_file(base_url: str, file_path: str, api_key=None):
         return response.json()
 
 
+def check_connection(base_url: str, api_key=None):
+    """Simple connection check to the RAG API."""
+    headers = {}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    
+    try:
+        # Try to connect to the base URL
+        response = requests.get(base_url, headers=headers, timeout=5)
+        return response.status_code >= 200 and response.status_code < 300, response.status_code
+    except requests.exceptions.RequestException as e:
+        return False, str(e)
+
+
 def find_documents(directory_path: str):
     """Find all supported document files in a directory."""
     document_paths = []
@@ -68,6 +82,7 @@ def find_documents(directory_path: str):
 def upload_directory(base_url: str, directory_path: str, api_key=None):
     """Upload all supported files from a directory."""
     console = Console()
+    
     document_paths = find_documents(directory_path)
     
     if not document_paths:
@@ -82,7 +97,13 @@ def upload_directory(base_url: str, directory_path: str, api_key=None):
     table.add_column("Status")
     table.add_column("Document ID")
     
+    # Create an error table to show full error details
+    error_table = Table(title="Upload Errors")
+    error_table.add_column("File")
+    error_table.add_column("Error Details")
+    
     uploaded_docs = {}
+    has_errors = False
     
     # Upload each document and record its ID
     for doc_path in document_paths:
@@ -95,10 +116,31 @@ def upload_directory(base_url: str, directory_path: str, api_key=None):
                 table.add_row(file_name, "[green]Success[/green]", doc_id)
             else:
                 table.add_row(file_name, "[red]Failed[/red]", "N/A")
+                error_table.add_row(file_name, "No document ID returned")
+                has_errors = True
         except Exception as e:
-            table.add_row(file_name, f"[red]Error: {str(e)[:50]}...[/red]", "N/A")
+            table.add_row(file_name, "[red]Failed[/red]", "N/A")
+            
+            # Generate detailed error message
+            error_message = str(e)
+            if hasattr(e, 'response') and e.response:
+                error_message += f"\nStatus code: {e.response.status_code}"
+                try:
+                    # Try to parse response as JSON
+                    error_json = e.response.json()
+                    error_message += f"\nResponse: {json.dumps(error_json, indent=2)}"
+                except:
+                    # Otherwise show text response
+                    error_message += f"\nResponse: {e.response.text}"
+            
+            error_table.add_row(file_name, error_message)
+            has_errors = True
     
     console.print(table)
+    
+    # Display error table if there were errors
+    if has_errors:
+        console.print(error_table)
     
     # Generate output filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -138,34 +180,61 @@ def main():
     
     console = Console()
     
+    # Check connection to the API first
+    is_connected, status = check_connection(rag_api_url, rag_api_key)
+    if not is_connected:
+        console.print(f"[bold red]Connection to the RAG API failed: {status}[/bold red]")
+        return 1
+    
     try:
         if args.file:
             # Upload a single file
-            result = upload_file(rag_api_url, args.file, rag_api_key)
-            
-            # Create a table to show the result
-            table = Table(title="File Upload Result")
-            table.add_column("File")
-            table.add_column("Status")
-            table.add_column("Document ID")
-            
-            file_name = Path(args.file).name
-            doc_id = result.get('id')
-            if doc_id:
-                table.add_row(file_name, "[green]Success[/green]", doc_id)
+            try:
+                result = upload_file(rag_api_url, args.file, rag_api_key)
                 
-                # Save the document ID to the output file
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                output_file = f"uploaded_files_{timestamp}.json"
+                # Create a table to show the result
+                table = Table(title="File Upload Result")
+                table.add_column("File")
+                table.add_column("Status")
+                table.add_column("Document ID")
                 
-                with open(output_file, 'w') as f:
-                    json.dump({args.file: doc_id}, f, indent=2)
+                file_name = Path(args.file).name
+                doc_id = result.get('id')
+                if doc_id:
+                    table.add_row(file_name, "[green]Success[/green]", doc_id)
+                    
+                    # Save the document ID to the output file
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    output_file = f"uploaded_files_{timestamp}.json"
+                    
+                    with open(output_file, 'w') as f:
+                        json.dump({args.file: doc_id}, f, indent=2)
+                    
+                    console.print(f"[green]Document ID saved to {output_file}[/green]")
+                else:
+                    table.add_row(file_name, "[red]Failed[/red]", "N/A")
                 
-                console.print(f"[green]Document ID saved to {output_file}[/green]")
-            else:
-                table.add_row(file_name, "[red]Failed[/red]", "N/A")
-            
-            console.print(table)
+                console.print(table)
+                
+            except Exception as e:
+                console.print(f"[bold red]Error uploading file:[/bold red]")
+                
+                # Show detailed error information
+                error_message = str(e)
+                if hasattr(e, 'response') and e.response:
+                    console.print(f"Status code: {e.response.status_code}")
+                    try:
+                        # Try to parse response as JSON
+                        error_json = e.response.json()
+                        console.print("Response:")
+                        console.print_json(json.dumps(error_json))
+                    except:
+                        # Otherwise show text response
+                        console.print(f"Response: {e.response.text}")
+                else:
+                    console.print(error_message)
+                    
+                return 1
         else:
             # Upload all files in the directory
             upload_directory(rag_api_url, args.dir, rag_api_key)
@@ -173,7 +242,7 @@ def main():
     except Exception as e:
         console.print(f"[bold red]Error: {str(e)}[/bold red]")
         if hasattr(e, 'response') and e.response:
-            console.print(f"[dim]Response: {e.response.text}[/dim]")
+            console.print(f"Response: {e.response.text}")
         return 1
     
     return 0
