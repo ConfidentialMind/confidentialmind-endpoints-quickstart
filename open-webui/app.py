@@ -271,7 +271,7 @@ def reload_config():
 
 if __name__ == '__main__':
     # Load configuration file
-    config_file = os.environ.get('CONFIG_FILE', 'config.json')
+    config_file = os.environ.get('CM_OPEN_WEBUI_PROXY_CONFIG_FILE', 'config.json')
     if not load_endpoints_from_json(config_file):
         print(f"Using example configuration")
         # Provide an example configuration
@@ -284,7 +284,7 @@ if __name__ == '__main__':
             }
         }
     
-    port = int(os.environ.get('PORT', 3333))
+    port = int(os.environ.get('CM_OPEN_WEBUI_PROXY_PORT', 3333))
     print(f"OpenAI compatible multi-endpoint proxy running on port {port}")
     print(f"Available models: {', '.join(endpoints.keys())}")
     print(f"Health check: http://localhost:{port}/health")
