@@ -11,6 +11,13 @@ from dotenv import load_dotenv
 
 # Sample JSON schema to guide the model's output
 # Note: This is a simple example - schema capabilities have some limitations
+# Note: Since vLLM v0.8.3 enums are supported in the schema. If using vLLM >= v0.8.3, you can
+# modify the sentiment field to be an enum with values like "positive", "negative", "neutral"
+# and the model will respect that. Like this:
+# "sentiment": {
+#   "type": "string",
+#   "enum": ["positive", "negative", "neutral"]
+# }
 SAMPLE_SCHEMA = {
   "type": "object",
   "properties": {
@@ -24,8 +31,7 @@ SAMPLE_SCHEMA = {
           "items": {"type": "string"}
         },
         "sentiment": {
-          "type": "string",
-          "enum": ["positive", "neutral", "negative"]
+          "type": "string"
         },
         "categories": {
           "type": "array",
