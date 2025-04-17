@@ -13,7 +13,7 @@ This repository is organized into the following sections:
 
 ### TypeScript Examples
 - **Model Endpoint Examples** (`/model-endpoint-ts`): TypeScript versions of the model endpoint examples
-- **RAG Endpoint Examples** (`/rag-endpoint-ts`): TypeScript versions of the RAG endpoint examples (coming soon)
+- **RAG Endpoint Examples** (`/rag-endpoint-ts`): TypeScript versions of the RAG endpoint examples
 
 ## Getting Started
 
