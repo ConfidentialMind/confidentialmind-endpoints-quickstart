@@ -85,7 +85,7 @@ async function main(): Promise<void> {
       'Renewable energy investments hit a record high last quarter, with solar projects ' +
       'leading the way. Despite supply chain challenges, new installations increased by 28%. ' +
       'However, regulatory uncertainty in some markets has caused concern among investors.' }
-  ];
+  ] as OpenAI.ChatCompletionMessageParam[];
   
   // Create the API request with guided JSON output
   console.log('Requesting guided JSON response...');
@@ -137,8 +137,8 @@ async function main(): Promise<void> {
       console.error('Error: The response is not valid JSON');
     }
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
   }
   
   console.log('\nNote: Our guided JSON capabilities have some limitations.');

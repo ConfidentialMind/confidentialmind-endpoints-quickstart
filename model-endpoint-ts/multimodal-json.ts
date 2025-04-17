@@ -173,7 +173,7 @@ async function main(): Promise<void> {
           }
         ]
       }
-    ];
+    ] as OpenAI.ChatCompletionMessageParam[];
     
     console.log(`Processing image: ${imagePath}`);
     console.log('Note: This may take some time depending on the image size and content.');
@@ -235,8 +235,8 @@ async function main(): Promise<void> {
       console.error('Error: The response is not valid JSON');
     }
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
   }
   
   console.log('\nNote: Our guided JSON capabilities have some limitations.');

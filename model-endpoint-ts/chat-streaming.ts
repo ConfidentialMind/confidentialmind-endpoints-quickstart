@@ -150,8 +150,8 @@ async function main(): Promise<void> {
       });
     });
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {

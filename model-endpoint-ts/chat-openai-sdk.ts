@@ -38,7 +38,7 @@ async function main(): Promise<void> {
   const messages = [
     { role: 'system', content: 'You are a helpful assistant.' },
     { role: 'user', content: 'Write a short haiku about technology.' }
-  ];
+  ] as OpenAI.ChatCompletionMessageParam[];
   
   // Make the API request
   console.log('Sending request to chat completions API...');
@@ -63,8 +63,8 @@ async function main(): Promise<void> {
     console.log(`Completion tokens: ${response.usage?.completion_tokens}`);
     console.log(`Total tokens: ${response.usage?.total_tokens}`);
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
   }
 }
 

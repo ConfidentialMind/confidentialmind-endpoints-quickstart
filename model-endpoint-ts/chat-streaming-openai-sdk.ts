@@ -39,7 +39,7 @@ async function main(): Promise<void> {
   const messages = [
     { role: 'system', content: 'You are a helpful assistant.' },
     { role: 'user', content: 'Explain the concept of transfer learning in AI.' }
-  ];
+  ] as OpenAI.ChatCompletionMessageParam[];
   
   // Make the streaming API request
   console.log('Sending streaming request to chat completions API...');
@@ -69,8 +69,8 @@ async function main(): Promise<void> {
     console.log('\n' + '-'.repeat(60));
     console.log(`\nFull response length: ${fullResponse.length} characters`);
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
   }
 }
 

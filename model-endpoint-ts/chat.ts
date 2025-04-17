@@ -104,8 +104,8 @@ async function main(): Promise<void> {
     console.log(`Completion tokens: ${result.usage?.completion_tokens || 'N/A'}`);
     console.log(`Total tokens: ${result.usage?.total_tokens || 'N/A'}`);
     
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
+  } catch (error: any) {
+    console.error(`Error: ${error.message || error}`);
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
