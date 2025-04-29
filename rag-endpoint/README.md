@@ -22,69 +22,89 @@ cp .env.example .env
 pip install -r requirements.txt
 ```
 
-## Usage Examples
+## Example Workflow
 
-### Uploading Documents
+Follow these steps to try out the complete RAG workflow with our example scripts:
 
-Upload documents from the test-data folder:
+### 1. Upload Your Documents
+
+Upload the included sample documents:
 
 ```bash
 python send-files.py
 ```
 
-Upload from a specific directory:
+This will upload the example documents in the `test-data` directory:
+- `ConfidentialMind-Whitepaper.pdf`: Product whitepaper
+- `rag-endpoint.md`: API documentation
 
-```bash
-python send-files.py --dir ./my-documents
-```
+### 2. View Your Uploaded Documents
 
-Upload a single file:
-
-```bash
-python send-files.py --file ./test-data/ConfidentialMind-Whitepaper.pdf
-```
-
-### Viewing Documents
-
-List all uploaded documents:
+List all your uploaded documents:
 
 ```bash
 python get-files.py
 ```
 
-### Chatting with Your Documents
+This shows all documents you've uploaded, including their IDs and metadata.
 
-Start an interactive chat:
+### 3. Retrieve Context from Your Documents
+
+Get relevant information chunks about document uploads:
+
+```bash
+python context.py
+```
+
+The default query is "How do I upload files to the RAG endpoint?" but you can specify your own:
+
+```bash
+python context.py --query "What are the key features of the ConfidentialMind product?"
+```
+
+### 4. Chat with Your Documents
+
+Start an interactive chat with your documents:
 
 ```bash
 python chat.py
 ```
 
-Ask a single question:
+Or ask a single question:
 
 ```bash
-python chat.py --query "What can I do with the ConfidentialMind stack?"
+python chat.py --query "How can I upload files to the RAG system?"
 ```
 
-### Cleaning Up
+### 5. Clean Up (When Finished)
 
-Delete files from a specific upload:
-
-```bash
-python delete-files.py --from-json uploaded_files_20240407_120000.json
-```
-
-Delete all uploaded files:
+When you're done experimenting, you can delete your uploaded files:
 
 ```bash
 python delete-files.py --all
 ```
 
-Skip confirmations:
+## Advanced Examples with Document Filtering
+
+For more sophisticated usage patterns with filtering capabilities, explore the [advanced](./advanced) directory:
 
 ```bash
-python delete-files.py --all --yes
+# Upload the whitepaper with specific metadata for filtering demo
+python advanced/files_advanced.py --file ./test-data/ConfidentialMind-Whitepaper.pdf \
+                                 --metadata '{"source": "whitepaper", "department": "Engineering"}'
+
+# Upload markdown doc with different metadata
+python advanced/files_advanced.py --file ./test-data/rag-endpoint.md \
+                                 --metadata '{"source": "documentation", "department": "Product"}'
+
+# Demonstrate metadata filtering - get only whitepaper content
+python advanced/retrieval_advanced.py --metadata-filter "source:eq:whitepaper" --verbose
+
+# Chat using only content from the Product department
+python advanced/chat_advanced.py --filter-metadata "department:eq:Product"
 ```
+
+Each advanced script provides detailed help with `--help` explaining all available options.
 
 ## More Information
 
