@@ -57,8 +57,14 @@ def main():
         # Parse and print the response
         result = response.json()
         assistant_response = result["choices"][0]["message"]["content"]
+        reasoning_response = result["choices"][0]["message"]["reasoning_content"]
+        if reasoning_response:
+            print("\nReasoning response:")
+            print("-" * 40)
+            print(reasoning_response)
+            print("-" * 40)
         
-        print("\nAPI Response:")
+        print("\nAI Response:")
         print("-" * 40)
         print(assistant_response)
         print("-" * 40)
