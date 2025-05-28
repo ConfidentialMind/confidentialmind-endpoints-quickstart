@@ -1,7 +1,7 @@
 """
-title: RAG Context Filter
+title: RAG Context Filter with Query Enhancement
 author: your-name
-version: 0.1
+version: 0.2
 """
 
 from pydantic import BaseModel, Field
@@ -39,10 +39,146 @@ class Filter:
             default="", description="Filter to documents owned by specific user"
         )
 
+        # Query enhancement parameters
+        enable_query_enhancement: bool = Field(
+            default=True,
+            description="Enable query enhancement using conversation context",
+        )
+        query_enhancement_endpoint: str = Field(
+            default="http://localhost:8001",
+            description="Base URL of query enhancement LLM endpoint",
+        )
+        query_enhancement_api_key: str = Field(
+            default="", description="API key for query enhancement endpoint"
+        )
+        query_enhancement_model: str = Field(
+            default="cm-llm", description="Model to use for query enhancement"
+        )
+        max_context_messages: int = Field(
+            default=5,
+            description="Maximum number of previous messages to include for context",
+        )
+        query_enhancement_prompt: str = Field(
+            default="""You are a query enhancement assistant. Your task is to rewrite the user's query to include necessary context from the conversation history, making it self-contained for retrieval purposes.
+
+Rules:
+1. The enhanced query must be self-contained and understandable without the conversation history
+2. Keep the enhanced query under 500 tokens (roughly 375 words)
+3. Only include context that is relevant to understanding what the user is asking for
+4. Preserve the user's intent and main question
+5. If the query already seems self-contained, return it as-is
+6. Focus on including entity names, topics, and specific details mentioned earlier that the current query references
+
+Conversation history:
+{conversation_history}
+
+Current user query: {query}
+
+Enhanced query:""",
+            description="Prompt template for query enhancement",
+        )
+
     def __init__(self):
         self.valves = self.Valves()
         # Track which messages we've modified
         self.modified_messages = set()
+
+    def enhance_query(self, query: str, messages: List[dict]) -> str:
+        """
+        Enhance the query using conversation context via LLM
+        """
+        if not self.valves.enable_query_enhancement:
+            return query
+
+        try:
+            # Build conversation history (excluding the current query)
+            conversation_history = []
+            message_count = 0
+
+            # Get recent messages up to max_context_messages (excluding the last user message)
+            for msg in reversed(messages[:-1]):
+                if message_count >= self.valves.max_context_messages:
+                    break
+
+                role = msg.get("role", "")
+                content = msg.get("content", "")
+
+                # Extract original content if this was a previously enhanced message
+                if role == "user" and id(msg) in self.modified_messages:
+                    content = self.extract_original_query(content)
+
+                if content:
+                    conversation_history.append(f"{role}: {content}")
+                    message_count += 1
+
+            # Reverse to get chronological order
+            conversation_history.reverse()
+
+            # If no conversation history, return original query
+            if not conversation_history:
+                print("RAG: No conversation history, using original query")
+                return query
+
+            # Format the prompt
+            prompt = self.valves.query_enhancement_prompt.format(
+                conversation_history="\n".join(conversation_history), query=query
+            )
+
+            # Prepare the request
+            headers = {"Content-Type": "application/json"}
+            if self.valves.query_enhancement_api_key:
+                headers["Authorization"] = (
+                    f"Bearer {self.valves.query_enhancement_api_key}"
+                )
+
+            # Build the request payload (adjust based on your LLM endpoint format)
+            payload = {
+                "model": self.valves.query_enhancement_model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant that enhances queries for better retrieval.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.1,
+                "max_tokens": 500,
+            }
+
+            endpoint = f"{self.valves.query_enhancement_endpoint}/v1/chat/completions"
+            print(f"RAG: Enhancing query via {endpoint}")
+
+            response = requests.post(
+                endpoint, json=payload, headers=headers, timeout=self.valves.timeout
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                # Extract enhanced query from response (adjust based on your endpoint's response format)
+                enhanced_query = (
+                    data.get("choices", [{}])[0]
+                    .get("message", {})
+                    .get("content", "")
+                    .strip()
+                )
+
+                if enhanced_query:
+                    print(f"RAG: Query enhanced successfully")
+                    print(f"RAG: Original: {query[:100]}...")
+                    print(f"RAG: Enhanced: {enhanced_query}...")
+                    return enhanced_query
+                else:
+                    print("RAG: No enhanced query returned, using original")
+                    return query
+            else:
+                print(
+                    f"RAG: Query enhancement failed with status {response.status_code}: {response.text}"
+                )
+                return query
+
+        except Exception as e:
+            print(f"RAG: Exception during query enhancement: {str(e)}")
+            return query
 
     def get_rag_context(self, query: str) -> tuple[List[str], List[float], dict]:
         """
@@ -186,8 +322,11 @@ class Filter:
 
             print(f"RAG: Processing query: {original_query[:100]}...")
 
-            # Get RAG context
-            chunks, scores, metadata = self.get_rag_context(original_query)
+            # Enhance the query if enabled and there's conversation history
+            enhanced_query = self.enhance_query(original_query, messages)
+
+            # Get RAG context using the enhanced query
+            chunks, scores, metadata = self.get_rag_context(enhanced_query)
 
             if chunks:
                 # Format context chunks
@@ -198,13 +337,13 @@ class Filter:
 
                 formatted_context = "\n\n".join(formatted_chunks)
 
-                # Inject context using template
-                enhanced_query = self.valves.context_template.format(
+                # Inject context using template (use original query in the template, not enhanced)
+                enhanced_content = self.valves.context_template.format(
                     context=formatted_context, query=original_query
                 )
 
                 # Update the message
-                last_user_msg["content"] = enhanced_query
+                last_user_msg["content"] = enhanced_content
 
                 # Track that we modified this message
                 self.modified_messages.add(id(last_user_msg))
