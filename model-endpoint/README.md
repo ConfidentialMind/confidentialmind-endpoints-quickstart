@@ -2,6 +2,24 @@
 
 These examples demonstrate how to interact with our AI model endpoints, which use an OpenAI-compatible API interface. They cover various functionalities, including chat completions, streaming responses, and multimodal capabilities. The examples show integration with both HTTP requests and the OpenAI SDK.
 
+## Model Endpoint vs Direct Model Deployment
+
+ConfidentialMind offers two ways to deploy and access AI models:
+
+### Model Endpoint
+- **Multiple models**: One endpoint can serve multiple models dynamically
+- **Stable connection details**: Add, remove, or update models without changing URL/API key
+- **Explicit model selection**: Choose specific models by name in your requests
+- **Trade-off**: Cannot use a single hard-coded model name while switching models
+
+### Direct Model Deployment  
+- **Single model**: One deployment serves one specific model (always appears as `cm-llm`)
+- **Simple model reference**: Use `cm-llm` consistently regardless of the actual model
+- **Dedicated resources**: Model has dedicated computational resources
+- **Trade-off**: Requires new deployment (new URL/API key) to switch models
+
+**Recommendation**: Model endpoints are generally preferred for their flexibility in model management and stable connection details.
+
 ## Setup
 
 1. Install required packages:
@@ -14,9 +32,20 @@ These examples demonstrate how to interact with our AI model endpoints, which us
    cp .env.example .env
    ```
 
-3. Edit the `.env` file with your API credentials.
+3. Edit the `.env` file with your API credentials:
+   - **BASE_URL**: Your model endpoint or deployment URL  
+   - **API_KEY**: Your API key from the ConfidentialMind portal
+   - **MODEL_NAME**: Set to `cm-llm` for direct deployments, or use specific model names for model endpoints
 
 ## Examples
+
+### List Available Models
+
+Check what models are available at your endpoint:
+
+- **List models**: `python list-models.py`
+
+This example helps you understand whether you're connected to a model endpoint (multiple models) or a direct deployment (single `cm-llm` model).
 
 ### Basic Chat Completion
 
