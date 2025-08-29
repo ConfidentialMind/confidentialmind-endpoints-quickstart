@@ -1,0 +1,29 @@
+{
+  "name": "confidentialmind-rag-endpoint-examples",
+  "version": "1.0.0",
+  "description": "TypeScript examples for ConfidentialMind AI RAG Endpoints",
+  "scripts": {
+    "build": "tsc",
+    "chat": "ts-node chat.ts",
+    "get-files": "ts-node get-files.ts",
+    "send-files": "ts-node send-files.ts",
+    "delete-files": "ts-node delete-files.ts"
+  },
+  "dependencies": {
+    "@types/glob": "^8.1.0",
+    "axios": "^1.6.7",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "dotenv": "^16.4.1",
+    "form-data": "^4.0.0",
+    "glob": "^11.0.1",
+    "inquirer": "^8.2.5"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^8.2.6",
+    "@types/node": "^20.11.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

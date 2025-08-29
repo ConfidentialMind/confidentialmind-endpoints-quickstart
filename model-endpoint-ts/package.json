@@ -1,0 +1,25 @@
+{
+  "name": "confidentialmind-model-endpoint-examples",
+  "version": "1.0.0",
+  "description": "TypeScript examples for ConfidentialMind AI Model Endpoints",
+  "scripts": {
+    "build": "tsc",
+    "chat": "ts-node chat.ts",
+    "chat-openai-sdk": "ts-node chat-openai-sdk.ts",
+    "chat-streaming": "ts-node chat-streaming.ts",
+    "chat-streaming-openai-sdk": "ts-node chat-streaming-openai-sdk.ts",
+    "guided-json": "ts-node guided-json.ts",
+    "multimodal": "ts-node multimodal.ts",
+    "multimodal-json": "ts-node multimodal-json.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "openai": "^4.28.0",
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
